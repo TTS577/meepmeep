@@ -5,13 +5,13 @@ from pathlib import Path
 configfile: "config/config.yaml"
 
 # ── Container images (GHCR) ───────────────────────────────────────────────────
-CONTAINER_LONGREAD  = "docker://ghcr.io/tts577/meep/longread-env:latest"
-CONTAINER_ASSEMBLY  = "docker://ghcr.io/tts577/meep/assembly-tools:latest"
-CONTAINER_MEDAKA    = "docker://ghcr.io/tts577/meep/medaka:latest"
-CONTAINER_CHECKM2   = "docker://ghcr.io/tts577/meep/checkm2:latest"
+CONTAINER_LONGREAD  = "docker://ghcr.io/tts577/meepmeep/longread-env:latest"
+CONTAINER_ASSEMBLY  = "docker://ghcr.io/tts577/meepmeep/assembly-tools:latest"
+CONTAINER_MEDAKA    = "docker://ghcr.io/tts577/meepmeep/medaka:latest"
+CONTAINER_CHECKM2   = "docker://ghcr.io/tts577/meepmeep/checkm2:latest"
 
-OUTDIR    = config.get("outdir", "meep_pipeline/results")
-HUMAN_REF = config.get("human_ref", "meep_pipeline/resources/GRCh38.mmi")
+OUTDIR    = config.get("outdir", "meepmeep/results")
+HUMAN_REF = config.get("human_ref", "meepmeep/resources/GRCh38.mmi")
 
 # Ensure process substitutions (tee >(…)) work correctly
 shell.executable("/bin/bash")
