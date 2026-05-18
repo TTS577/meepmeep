@@ -5,10 +5,10 @@ from pathlib import Path
 configfile: "config/config.yaml"
 
 # ── Container images (GHCR) ───────────────────────────────────────────────────
-CONTAINER_LONGREAD  = "docker://ghcr.io/tts577/meepmeep/longread-env:latest"
-CONTAINER_ASSEMBLY  = "docker://ghcr.io/tts577/meepmeep/assembly-tools:latest"
-CONTAINER_MEDAKA    = "docker://ghcr.io/tts577/meepmeep/medaka:latest"
-CONTAINER_CHECKM2   = "docker://ghcr.io/tts577/meepmeep/checkm2:latest"
+CONTAINER_LONGREAD  = "docker://ghcr.io/TTS577/meepmeep/longread-env:latest"
+CONTAINER_ASSEMBLY  = "docker://ghcr.io/TTS577/meepmeep/assembly-tools:latest"
+CONTAINER_MEDAKA    = "docker://ghcr.io/TTS577/meepmeep/medaka:latest"
+CONTAINER_CHECKM2   = "docker://ghcr.io/TTS577/meepmeep/checkm2:latest"
 
 OUTDIR    = config.get("outdir", "meepmeep/results")
 HUMAN_REF = config.get("human_ref", "meepmeep/resources/GRCh38.mmi")
