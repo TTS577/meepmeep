@@ -1,4 +1,4 @@
-name: meep_checkm2
+name: meepmeep_checkm2
 channels:
   - bioconda
   - conda-forge
