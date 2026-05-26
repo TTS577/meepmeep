@@ -1,4 +1,4 @@
-name: meep_assembly_tools
+name: meepmeep-longread_env
 # NOTE: This bundled environment is no longer used by the pipeline.
 # All rules now use dedicated per-tool environments in this directory.
 # Kept for reference only.
@@ -7,7 +7,12 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - quast >=5.2
-  - multiqc >=1.18
+  - minimap2 >=2.26
+  - samtools >=1.18
+  - porechop >=0.2.4
+  - filtlong >=0.2.1
+  - flye >=2.9
+  - nanostat >=1.6
   - python >=3.9
   - pandas >=1.5
+  - biopython >=1.80

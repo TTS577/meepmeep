@@ -1,4 +1,4 @@
-name: meep_medaka
+name: meepmeep-medaka
 channels:
   - bioconda
   - conda-forge

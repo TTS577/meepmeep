@@ -4,8 +4,8 @@ from pathlib import Path
 # ── Config ────────────────────────────────────────────────────────────────────
 configfile: "config/config.yaml"
 
-OUTDIR    = config.get("outdir", "meep_pipeline/results")
-HUMAN_REF = config.get("human_ref", "meep_pipeline/resources/GRCh38.mmi")
+OUTDIR    = config.get("outdir", "results")
+HUMAN_REF = config.get("human_ref", "resources/GRCh38.mmi")
 
 # Ensure process substitutions (tee >(…)) work correctly
 shell.executable("/bin/bash")
@@ -230,7 +230,7 @@ rule medaka:
         chunk_ovlp = config["medaka"]["chunk_ovlp"],
         outdir     = "{outdir}/{sample}/08_medaka",
     threads: 8
-    conda: "envs/meep_medaka.yaml"
+    conda: "envs/meepmeep-medaka.yaml"
     log: "{outdir}/{sample}/logs/medaka.log"
     shell:
         """
@@ -265,7 +265,7 @@ rule checkm2:
         outdir = "{outdir}/{sample}/09_checkm2",
         db     = config["checkm2"]["db"],
     threads: 8
-    conda: "envs/meep_checkm2.yaml"
+    conda: "envs/meepmeep-checkm2.yaml"
     log: "{outdir}/{sample}/logs/checkm2.log"
     shell:
         """

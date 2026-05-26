@@ -1,0 +1,140 @@
+name: Build & Push Container Images
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "envs/**"
+      - "containers/**"
+      - ".github/workflows/build-containers.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/meepmeep
+
+jobs:
+  # ── longread-env ────────────────────────────────────────────────────────────
+  build-longread-env:
+    name: longread-env
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & push longread-env
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: containers/longread_env/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_PREFIX }}/longread-env:latest
+            ${{ env.IMAGE_PREFIX }}/longread-env:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ── assembly-tools ──────────────────────────────────────────────────────────
+  build-assembly-tools:
+    name: assembly-tools
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & push assembly-tools
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: containers/assembly_tools/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_PREFIX }}/assembly-tools:latest
+            ${{ env.IMAGE_PREFIX }}/assembly-tools:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ── medaka ──────────────────────────────────────────────────────────────────
+  build-medaka:
+    name: medaka
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & push medaka
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: containers/medaka/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_PREFIX }}/medaka:latest
+            ${{ env.IMAGE_PREFIX }}/medaka:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ── checkm2 ─────────────────────────────────────────────────────────────────
+  build-checkm2:
+    name: checkm2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & push checkm2
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: containers/checkm2/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_PREFIX }}/checkm2:latest
+            ${{ env.IMAGE_PREFIX }}/checkm2:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

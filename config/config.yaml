@@ -1,6 +1,6 @@
 # ── Output / resource paths ───────────────────────────────────────────────────
-outdir: "meep_pipeline/results"
-human_ref: "meep_pipeline/resources/GRCh38.mmi"
+outdir: "results"
+human_ref: "resources/GRCh38.mmi"
 
 # ── Sample sheet (TSV with columns: sample, long_reads) ──────────────────────
 samples: "config/samples.tsv"
@@ -26,4 +26,4 @@ medaka:
 
 # ── CheckM2 ───────────────────────────────────────────────────────────────────
 checkm2:
-  db: "meep_pipeline/resources/checkm2_db/uniref100.KO.1.dmnd"
+  db: "resources/checkm2_db/uniref100.KO.1.dmnd"
