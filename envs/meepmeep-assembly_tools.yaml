@@ -9,5 +9,10 @@ channels:
 dependencies:
   - quast >=5.2
   - multiqc >=1.18
+  # Assembly quality assessment
+  - quast >=5.2
+  # Multi-QC aggregation (supports NanoStat, Flye, CheckM2, QUAST outputs)
+  - multiqc >=1.18
+  # Python stack
   - python >=3.9
   - pandas >=1.5
