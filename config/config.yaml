@@ -21,6 +21,8 @@ flye:
 # ── Medaka ────────────────────────────────────────────────────────────────────
 medaka:
   model: "r1041_e82_400bps_hac_g632"   # adjust to your flowcell/basecaller version
+  chunk_len: 800                         # consensus chunk length
+  chunk_ovlp: 400                        # overlap between chunks
 
 # ── CheckM2 ───────────────────────────────────────────────────────────────────
 checkm2:

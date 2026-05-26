@@ -1,0 +1,4 @@
+.snakemake/
+meep_pipeline/results/
+meep_pipeline/resources/
+*.log

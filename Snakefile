@@ -4,6 +4,8 @@ from pathlib import Path
 # ── Config ────────────────────────────────────────────────────────────────────
 configfile: "config/config.yaml"
 
+OUTDIR    = config.get("outdir", "results")
+HUMAN_REF = config.get("human_ref", "resources/GRCh38.mmi")
 # ── Container images (GHCR) ───────────────────────────────────────────────────
 CONTAINER_LONGREAD  = "docker://ghcr.io/tts577/meepmeep/longread-env:latest"
 CONTAINER_ASSEMBLY  = "docker://ghcr.io/tts577/meepmeep/assembly-tools:latest"
@@ -31,15 +33,18 @@ def multiqc_inputs(wildcards):
             f"{OUTDIR}/{s}/01_nanostat_raw/{s}_NanoStats.txt",
             f"{OUTDIR}/{s}/04_nanostat_clean/{s}_NanoStats.txt",
             f"{OUTDIR}/{s}/06_flye/assembly_info.txt",
+            f"{OUTDIR}/{s}/07_quast/report.tsv",
             f"{OUTDIR}/{s}/09_checkm2/quality_report.tsv",
+            f"{OUTDIR}/{s}/10_quast_polished/report.tsv",
         ]
     return inputs
 
 # ── Target rule ───────────────────────────────────────────────────────────────
 rule all:
     input:
-        expand("{outdir}/{sample}/07_quast/report.tsv",           outdir=OUTDIR, sample=SAMPLES),
-        expand("{outdir}/{sample}/09_checkm2/quality_report.tsv", outdir=OUTDIR, sample=SAMPLES),
+        expand("{outdir}/{sample}/07_quast/report.tsv",             outdir=OUTDIR, sample=SAMPLES),
+        expand("{outdir}/{sample}/09_checkm2/quality_report.tsv",   outdir=OUTDIR, sample=SAMPLES),
+        expand("{outdir}/{sample}/10_quast_polished/report.tsv",    outdir=OUTDIR, sample=SAMPLES),
         f"{OUTDIR}/multiqc/multiqc_report.html",
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -54,6 +59,7 @@ rule nanostat_raw:
         outdir = "{outdir}/{sample}/01_nanostat_raw",
         name   = "{sample}_NanoStats.txt",
     threads: 4
+    conda: "envs/env_nanostat.yaml"
     container: CONTAINER_LONGREAD
     log: "{outdir}/{sample}/logs/nanostat_raw.log"
     shell:
@@ -78,6 +84,7 @@ rule human_depletion_minimap2:
         depleted = "{outdir}/{sample}/02_human_depletion/{sample}_nonhuman.fastq.gz",
         stats    = "{outdir}/{sample}/02_human_depletion/{sample}_flagstat.txt",
     threads: 16
+    conda: "envs/env_minimap2_samtools.yaml"
     container: CONTAINER_LONGREAD
     log: "{outdir}/{sample}/logs/human_depletion.log"
     shell:
@@ -105,6 +112,7 @@ rule porechop:
     output:
         reads = "{outdir}/{sample}/03_porechop/{sample}_trimmed.fastq.gz",
     threads: 8
+    conda: "envs/env_porechop.yaml"
     container: CONTAINER_LONGREAD
     log: "{outdir}/{sample}/logs/porechop.log"
     shell:
@@ -128,6 +136,7 @@ rule nanostat_clean:
         outdir = "{outdir}/{sample}/04_nanostat_clean",
         name   = "{sample}_NanoStats.txt",
     threads: 4
+    conda: "envs/env_nanostat.yaml"
     container: CONTAINER_LONGREAD
     log: "{outdir}/{sample}/logs/nanostat_clean.log"
     shell:
@@ -153,6 +162,7 @@ rule filtlong:
         min_length   = config["filtlong"]["min_length"],
         min_mean_q   = config["filtlong"]["min_mean_q"],
         keep_percent = config["filtlong"]["keep_percent"],
+    conda: "envs/env_filtlong.yaml"
     container: CONTAINER_LONGREAD
     log: "{outdir}/{sample}/logs/filtlong.log"
     shell:
@@ -182,6 +192,7 @@ rule flye:
         extra       = config["flye"]["extra_args"],
         outdir      = "{outdir}/{sample}/06_flye",
     threads: 16
+    conda: "envs/env_flye.yaml"
     container: CONTAINER_LONGREAD
     log: "{outdir}/{sample}/logs/flye.log"
     shell:
@@ -207,6 +218,7 @@ rule quast:
     params:
         outdir = "{outdir}/{sample}/07_quast",
     threads: 4
+    conda: "envs/env_quast.yaml"
     container: CONTAINER_ASSEMBLY
     log: "{outdir}/{sample}/logs/quast.log"
     shell:
@@ -228,20 +240,33 @@ rule medaka:
     output:
         assembly = "{outdir}/{sample}/08_medaka/consensus.fasta",
     params:
-        model  = config["medaka"]["model"],
-        outdir = "{outdir}/{sample}/08_medaka",
+        model      = config["medaka"]["model"],
+        chunk_len  = config["medaka"]["chunk_len"],
+        chunk_ovlp = config["medaka"]["chunk_ovlp"],
+        outdir     = "{outdir}/{sample}/08_medaka",
     threads: 8
+    conda: "envs/meepmeep-medaka.yaml"
     container: CONTAINER_MEDAKA
     log: "{outdir}/{sample}/logs/medaka.log"
     shell:
         """
-        medaka_consensus \
-            -i {input.reads} \
-            -d {input.assembly} \
-            -o {params.outdir} \
-            -m {params.model} \
-            -t {threads} \
+        mkdir -p {params.outdir}
+        hdf={params.outdir}/calls_to_draft.hdf
+        medaka consensus \
+            --model {params.model} \
+            --threads {threads} \
+            --chunk_len {params.chunk_len} \
+            --chunk_ovlp {params.chunk_ovlp} \
+            {input.reads} \
+            {input.assembly} \
+            $hdf \
             2> {log}
+        medaka stitch \
+            --threads {threads} \
+            $hdf \
+            {input.assembly} \
+            {params.outdir}/consensus.fasta \
+            2>> {log}
         """
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -256,12 +281,13 @@ rule checkm2:
         outdir = "{outdir}/{sample}/09_checkm2",
         db     = config["checkm2"]["db"],
     threads: 8
+    conda: "envs/meepmeep-checkm2.yaml"
     container: CONTAINER_CHECKM2
     log: "{outdir}/{sample}/logs/checkm2.log"
     shell:
         """
         checkm2 predict \
-            --input {input.assembly} \
+            --input $(dirname {input.assembly}) \
             --output-directory {params.outdir} \
             --database_path {params.db} \
             --threads {threads} \
@@ -270,7 +296,29 @@ rule checkm2:
         """
 
 # ══════════════════════════════════════════════════════════════════════════════
-# STEP 10 — Aggregate all QC with MultiQC
+# STEP 10 — Assembly QC on polished assembly with QUAST
+# ══════════════════════════════════════════════════════════════════════════════
+rule quast_polished:
+    input:
+        assembly = "{outdir}/{sample}/08_medaka/consensus.fasta",
+    output:
+        report = "{outdir}/{sample}/10_quast_polished/report.tsv",
+    params:
+        outdir = "{outdir}/{sample}/10_quast_polished",
+    threads: 4
+    conda: "envs/env_quast.yaml"
+    log: "{outdir}/{sample}/logs/quast_polished.log"
+    shell:
+        """
+        quast.py \
+            {input.assembly} \
+            --output-dir {params.outdir} \
+            --threads {threads} \
+            2> {log}
+        """
+
+# ══════════════════════════════════════════════════════════════════════════════
+# STEP 11 — Aggregate all QC with MultiQC
 # ══════════════════════════════════════════════════════════════════════════════
 rule multiqc:
     input:
@@ -280,6 +328,7 @@ rule multiqc:
     params:
         indir  = OUTDIR,
         outdir = f"{OUTDIR}/multiqc",
+    conda: "envs/env_multiqc.yaml"
     container: CONTAINER_ASSEMBLY
     log: f"{OUTDIR}/logs/multiqc.log"
     shell:

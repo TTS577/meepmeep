@@ -1,0 +1,10 @@
+name: meep_porechop
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  # Pin to python 3.9 — Porechop (0.2.4) is unmaintained and has known
+  # incompatibilities with python >=3.10
+  - python >=3.9,<3.10
+  - porechop >=0.2.4
