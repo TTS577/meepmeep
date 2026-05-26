@@ -1,13 +1,13 @@
 name: meep_assembly_tools
+# NOTE: This bundled environment is no longer used by the pipeline.
+# All rules now use dedicated per-tool environments in this directory.
+# Kept for reference only.
 channels:
   - bioconda
   - conda-forge
   - defaults
 dependencies:
-  # Assembly quality assessment
   - quast >=5.2
-  # Multi-QC aggregation (supports NanoStat, Flye, CheckM2, QUAST outputs)
   - multiqc >=1.18
-  # Python stack
   - python >=3.9
   - pandas >=1.5

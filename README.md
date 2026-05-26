@@ -22,8 +22,24 @@ sequencing (WGS) based on Oxford Nanopore Technology (ONT) long reads.
 ## Requirements
 
 - [Snakemake](https://snakemake.readthedocs.io/) ≥ 7.0
-- For container execution: [Singularity/Apptainer](https://apptainer.org/) ≥ 3.0
-- For conda execution: [Conda](https://docs.conda.io/) or [Mamba](https://mamba.readthedocs.io/)
+- [Conda](https://docs.conda.io/) or [Mamba](https://mamba.readthedocs.io/) (recommended for faster env creation)
+
+## Conda environments
+
+Each tool runs in its own isolated conda environment to avoid Python version
+conflicts. Snakemake creates and caches these automatically on first run.
+
+| Environment file | Tool(s) | Python constraint |
+|-----------------|---------|-------------------|
+| `envs/env_nanostat.yaml` | NanoStat | ≥ 3.9 |
+| `envs/env_minimap2_samtools.yaml` | minimap2 + samtools | ≥ 3.9 |
+| `envs/env_porechop.yaml` | Porechop | ≥ 3.9, < 3.10 (unmaintained tool) |
+| `envs/env_filtlong.yaml` | Filtlong | ≥ 3.9 |
+| `envs/env_flye.yaml` | Flye | ≥ 3.9 |
+| `envs/env_quast.yaml` | QUAST | ≥ 3.9, < 3.11 |
+| `envs/meep_medaka.yaml` | Medaka | ≥ 3.9, < 3.11 |
+| `envs/meep_checkm2.yaml` | CheckM2 | ≥ 3.9 |
+| `envs/env_multiqc.yaml` | MultiQC | ≥ 3.9 |
 
 ## Setup
 
@@ -74,18 +90,16 @@ Edit `config/config.yaml` to set:
 
 ## Running the pipeline
 
-### With containers (recommended)
+### With conda environments (recommended)
 
-Uses per-rule Singularity/Apptainer images pulled automatically from
-BioContainers:
+Snakemake builds each per-tool environment automatically on first run. Using
+`mamba` as the solver significantly speeds up environment creation:
 
 ```bash
-snakemake --use-singularity --cores <N>
+snakemake --use-conda --conda-frontend mamba --cores <N>
 ```
 
-### With conda environments
-
-Uses per-rule conda environments defined in `envs/`:
+Without mamba:
 
 ```bash
 snakemake --use-conda --cores <N>
@@ -96,7 +110,7 @@ snakemake --use-conda --cores <N>
 Preview jobs without executing:
 
 ```bash
-snakemake --use-singularity --cores <N> -n
+snakemake --use-conda --cores <N> -n
 ```
 
 ## Output structure

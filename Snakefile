@@ -51,8 +51,7 @@ rule nanostat_raw:
         outdir = "{outdir}/{sample}/01_nanostat_raw",
         name   = "{sample}_NanoStats.txt",
     threads: 4
-    container: "docker://quay.io/biocontainers/nanostat:1.6.0--pyhdfd78af_0"
-    conda: "envs/meep_longread_env.yaml"
+    conda: "envs/env_nanostat.yaml"
     log: "{outdir}/{sample}/logs/nanostat_raw.log"
     shell:
         """
@@ -76,8 +75,7 @@ rule human_depletion_minimap2:
         depleted = "{outdir}/{sample}/02_human_depletion/{sample}_nonhuman.fastq.gz",
         stats    = "{outdir}/{sample}/02_human_depletion/{sample}_flagstat.txt",
     threads: 16
-    container: "docker://quay.io/biocontainers/mulled-v2-66534bcbb7031a148b13ccdd354249f399e7559a:1624d3ed33e5afc3c16e64a27e9b2fa48caa7e0b-0"
-    conda: "envs/meep_longread_env.yaml"
+    conda: "envs/env_minimap2_samtools.yaml"
     log: "{outdir}/{sample}/logs/human_depletion.log"
     shell:
         """
@@ -104,8 +102,7 @@ rule porechop:
     output:
         reads = "{outdir}/{sample}/03_porechop/{sample}_trimmed.fastq.gz",
     threads: 8
-    container: "docker://quay.io/biocontainers/porechop:0.2.4--py39h7cba7a3_3"
-    conda: "envs/meep_longread_env.yaml"
+    conda: "envs/env_porechop.yaml"
     log: "{outdir}/{sample}/logs/porechop.log"
     shell:
         """
@@ -128,8 +125,7 @@ rule nanostat_clean:
         outdir = "{outdir}/{sample}/04_nanostat_clean",
         name   = "{sample}_NanoStats.txt",
     threads: 4
-    container: "docker://quay.io/biocontainers/nanostat:1.6.0--pyhdfd78af_0"
-    conda: "envs/meep_longread_env.yaml"
+    conda: "envs/env_nanostat.yaml"
     log: "{outdir}/{sample}/logs/nanostat_clean.log"
     shell:
         """
@@ -154,8 +150,7 @@ rule filtlong:
         min_length   = config["filtlong"]["min_length"],
         min_mean_q   = config["filtlong"]["min_mean_q"],
         keep_percent = config["filtlong"]["keep_percent"],
-    container: "docker://quay.io/biocontainers/filtlong:0.2.1--hd03093a_1"
-    conda: "envs/meep_longread_env.yaml"
+    conda: "envs/env_filtlong.yaml"
     log: "{outdir}/{sample}/logs/filtlong.log"
     shell:
         """
@@ -184,8 +179,7 @@ rule flye:
         extra       = config["flye"]["extra_args"],
         outdir      = "{outdir}/{sample}/06_flye",
     threads: 16
-    container: "docker://quay.io/biocontainers/flye:2.9.2--py39h6935b12_1"
-    conda: "envs/meep_longread_env.yaml"
+    conda: "envs/env_flye.yaml"
     log: "{outdir}/{sample}/logs/flye.log"
     shell:
         """
@@ -210,8 +204,7 @@ rule quast:
     params:
         outdir = "{outdir}/{sample}/07_quast",
     threads: 4
-    container: "docker://quay.io/biocontainers/quast:5.2.0--py39pl5321h2add14b_1"
-    conda: "envs/meep_assembly_tools.yaml"
+    conda: "envs/env_quast.yaml"
     log: "{outdir}/{sample}/logs/quast.log"
     shell:
         """
@@ -237,7 +230,6 @@ rule medaka:
         chunk_ovlp = config["medaka"]["chunk_ovlp"],
         outdir     = "{outdir}/{sample}/08_medaka",
     threads: 8
-    container: "docker://quay.io/biocontainers/medaka:1.11.3--py39h05d5c5e_0"
     conda: "envs/meep_medaka.yaml"
     log: "{outdir}/{sample}/logs/medaka.log"
     shell:
@@ -273,7 +265,6 @@ rule checkm2:
         outdir = "{outdir}/{sample}/09_checkm2",
         db     = config["checkm2"]["db"],
     threads: 8
-    container: "docker://quay.io/biocontainers/checkm2:1.0.2--pyh7cba7a3_0"
     conda: "envs/meep_checkm2.yaml"
     log: "{outdir}/{sample}/logs/checkm2.log"
     shell:
@@ -298,8 +289,7 @@ rule quast_polished:
     params:
         outdir = "{outdir}/{sample}/10_quast_polished",
     threads: 4
-    container: "docker://quay.io/biocontainers/quast:5.2.0--py39pl5321h2add14b_1"
-    conda: "envs/meep_assembly_tools.yaml"
+    conda: "envs/env_quast.yaml"
     log: "{outdir}/{sample}/logs/quast_polished.log"
     shell:
         """
@@ -321,8 +311,7 @@ rule multiqc:
     params:
         indir  = OUTDIR,
         outdir = f"{OUTDIR}/multiqc",
-    container: "docker://quay.io/biocontainers/multiqc:1.21--pyhdfd78af_0"
-    conda: "envs/meep_assembly_tools.yaml"
+    conda: "envs/env_multiqc.yaml"
     log: f"{OUTDIR}/logs/multiqc.log"
     shell:
         """

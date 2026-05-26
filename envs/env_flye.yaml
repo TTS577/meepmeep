@@ -1,0 +1,8 @@
+name: meep_flye
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - python >=3.9
+  - flye >=2.9
