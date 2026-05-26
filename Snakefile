@@ -12,9 +12,6 @@ CONTAINER_ASSEMBLY  = "docker://ghcr.io/tts577/meepmeep/assembly-tools:latest"
 CONTAINER_MEDAKA    = "docker://ghcr.io/tts577/meepmeep/medaka:latest"
 CONTAINER_CHECKM2   = "docker://ghcr.io/tts577/meepmeep/checkm2:latest"
 
-OUTDIR    = config.get("outdir", "meepmeep/results")
-HUMAN_REF = config.get("human_ref", "meepmeep/resources/GRCh38.mmi")
-
 # Ensure process substitutions (tee >(…)) work correctly
 shell.executable("/bin/bash")
 
@@ -96,11 +93,12 @@ rule human_depletion_minimap2:
             {input.human_ref} \
             {input.reads} \
         2> {log} \
-        | samtools view -b -@ {threads} \
+        | samtools view -b -@ {threads} - \
         | tee >(samtools flagstat -@ {threads} - > {output.stats}) \
         | samtools view -b -f 4 -@ {threads} - \
         | samtools fastq -@ {threads} - \
         | gzip > {output.depleted}
+        wait
         """
 
 # ══════════════════════════════════════════════════════════════════════════════
