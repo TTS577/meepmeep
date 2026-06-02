@@ -7,3 +7,4 @@ dependencies:
   # QUAST >=5.2 has known compatibility issues with python >=3.11
   - python >=3.9,<3.11
   - quast >=5.2
+  - simplejson
