@@ -7,3 +7,6 @@ dependencies:
   - python >=3.9
   - minimap2 >=2.26
   - samtools >=1.18
+  # htslib (pulled in by samtools) requires libdeflate <1.26.0a0; conda-forge
+  # now ships libdeflate >=1.26, so we pin it to the compatible range.
+  - libdeflate >=1.13,<1.26
