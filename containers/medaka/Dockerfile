@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 USER $MAMBA_USER
-COPY --chown=$MAMBA_USER:$MAMBA_USER envs/meepmeep_medaka.yaml /tmp/env.yaml
+COPY --chown=$MAMBA_USER:$MAMBA_USER envs/meepmeep-medaka.yaml /tmp/env.yaml
 RUN micromamba install -y -n base -f /tmp/env.yaml \
     && micromamba clean --all --yes
 
