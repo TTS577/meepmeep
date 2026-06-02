@@ -9,9 +9,8 @@ dependencies:
   # dependency conflict present in checkm2 1.1.0.
   - checkm2 =1.0.2
   # Python stack
-  # Constrain to 3.9–3.10 to match checkm2 1.0.x requirements and avoid
-  # Python 3.14 RC builds that require _python_rc (missing from all channels).
-  - python >=3.9,<3.11
+  # checkm2 1.0.2 requires python >=3.6,<3.9; constrain accordingly.
+  - python >=3.6,<3.9
   # tensorflow (required by checkm2 1.0.x) pulls in grpcio which requires
   # c-ares >=1.17.1,<2.0a0; conda-forge now ships c-ares 2.x by default,
   # so we pin it to a compatible 1.x version.
