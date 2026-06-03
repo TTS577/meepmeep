@@ -2,11 +2,11 @@ name: meepmeep-medaka
 channels:
   - bioconda
   - conda-forge
-  - defaults
 dependencies:
-  # Pin libdeflate to a range compatible with htslib 1.17–1.23 (required by medaka 1.11.3)
-  - libdeflate >=1.13,<1.19
-  # Long-read polishing
-  - medaka =1.11.3
-  # Python stack
-  - python >=3.9,<3.11
+  # Long-read polishing.
+  # medaka >=2.0 dropped the libcurl <8 and old libdeflate constraints
+  # that made 1.11.3 unsolvable on current conda-forge.
+  # The 'defaults' channel is omitted to avoid strict-priority conflicts
+  # with conda-forge packages (e.g. libdeflate).
+  - medaka >=2.0
+  - python >=3.9,<3.12
