@@ -4,7 +4,5 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-  # QUAST has known compatibility issues with python >=3.11
-  - python >=3.9,<3.11
-  - quast >=5.2
-  - simplejson
+  - python >=3.9,<3.13
+  - quast >=5.0
