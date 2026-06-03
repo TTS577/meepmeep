@@ -229,7 +229,9 @@ rule quast:
         """
 
 # ══════════════════════════════════════════════════════════════════════════════
-# STEP 8 — Long-read polishing with Medaka
+# STEP 8 — Long-read polishing with Medaka (>=2.0 API)
+# medaka 2.x requires a pre-aligned sorted BAM as input to `medaka inference`.
+# minimap2 and samtools are bundled as dependencies of the medaka conda package.
 # ══════════════════════════════════════════════════════════════════════════════
 rule medaka:
     input:
@@ -249,19 +251,29 @@ rule medaka:
     shell:
         """
         mkdir -p {params.outdir}
-        hdf={params.outdir}/calls_to_draft.hdf
-        medaka consensus \
+        BAM={params.outdir}/reads_to_draft.bam
+        HDF={params.outdir}/calls_to_draft.hdf
+
+        # Align reads to draft assembly, sort and index
+        minimap2 -ax map-ont -t {threads} {input.assembly} {input.reads} \
+            2> {log} \
+            | samtools sort -@ {threads} -o $BAM
+        samtools index $BAM
+
+        # Run medaka inference (medaka >=2.0 API)
+        medaka inference \
             --model {params.model} \
             --threads {threads} \
             --chunk_len {params.chunk_len} \
             --chunk_ovlp {params.chunk_ovlp} \
-            {input.reads} \
-            {input.assembly} \
-            $hdf \
-            2> {log}
+            $BAM \
+            $HDF \
+            2>> {log}
+
+        # Stitch consensus sequence
         medaka stitch \
             --threads {threads} \
-            $hdf \
+            $HDF \
             {input.assembly} \
             {params.outdir}/consensus.fasta \
             2>> {log}
@@ -286,6 +298,7 @@ rule checkm2:
         """
         checkm2 predict \
             --input $(dirname {input.assembly}) \
+            --extension fasta \
             --output-directory {params.outdir} \
             --database_path {params.db} \
             --threads {threads} \

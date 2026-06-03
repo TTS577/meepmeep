@@ -2,9 +2,6 @@ name: meep_filtlong
 channels:
   - bioconda
   - conda-forge
-  - defaults
 dependencies:
-  # filtlong is a C++ binary; no Python runtime needed at runtime,
-  # but the conda package requires a base interpreter
   - python >=3.9
   - filtlong >=0.2.1

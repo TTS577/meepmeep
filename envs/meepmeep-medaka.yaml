@@ -3,10 +3,10 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  # Long-read polishing.
-  # medaka >=2.0 dropped the libcurl <8 and old libdeflate constraints
-  # that made 1.11.3 unsolvable on current conda-forge.
-  # The 'defaults' channel is omitted to avoid strict-priority conflicts
-  # with conda-forge packages (e.g. libdeflate).
+  # medaka >=2.0 uses ONNX Runtime, dropping the old tensorflow/libcurl <8
+  # dependency conflicts. minimap2 + samtools are needed for the alignment
+  # step that must now precede medaka inference.
   - medaka >=2.0
+  - minimap2 >=2.26
+  - samtools >=1.18
   - python >=3.9,<3.12
