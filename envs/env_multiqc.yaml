@@ -2,6 +2,10 @@ name: meep_multiqc
 channels:
   - bioconda
   - conda-forge
+  - nodefaults
 dependencies:
-  - python >=3.9
-  - multiqc >=1.18
+  # Pin python <3.13 to avoid 3.14rc (_python_rc missing on bioconda/conda-forge)
+  - python >=3.9,<3.13
+  # multiqc >=1.20 avoids the requests/urllib3 conflict in 1.18-1.19;
+  # with nodefaults, libdeflate resolves freely from conda-forge.
+  - multiqc >=1.20

@@ -2,8 +2,9 @@ name: meepmeep-checkm2
 channels:
   - bioconda
   - conda-forge
-  - defaults
+  - nodefaults
 dependencies:
-  # checkm2 >=1.0.3 no longer requires tensorflow, avoiding the
-  # grpcio/c-ares dependency conflict present in 1.0.2.
+  - python >=3.9,<3.13
+  # checkm2 >=1.0.3 uses ONNX Runtime instead of tensorflow,
+  # avoiding the grpcio/c-ares dependency conflict.
   - checkm2 >=1.0.3
