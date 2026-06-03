@@ -3,10 +3,12 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  # medaka >=2.0 uses ONNX Runtime, dropping the old tensorflow/libcurl <8
-  # dependency conflicts. minimap2 + samtools are needed for the alignment
-  # step that must now precede medaka inference.
+  # medaka depends on grpcio, which requires c-ares <2.
+  # conda-forge now ships c-ares >=2 by default, so we must pin it down.
+  # Pinning c-ares <2 lets the solver pick a grpcio that satisfies medaka.
+  - c-ares <2
+  # Do NOT pin samtools/minimap2 explicitly: medaka pulls in its own
+  # compatible htslib/libdeflate versions; independent samtools pins cause
+  # libdeflate version conflicts.
   - medaka >=2.0
-  - minimap2 >=2.26
-  - samtools >=1.18
   - python >=3.9,<3.12
