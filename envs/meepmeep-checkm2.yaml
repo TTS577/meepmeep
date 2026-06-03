@@ -4,14 +4,6 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  # Genome completeness & contamination estimation
-  # Pin to 1.0.2 to avoid the tensorflow-2.17 → libgrpc → c-ares 2.x
-  # dependency conflict present in checkm2 1.1.0.
-  - checkm2 =1.0.2
-  # Python stack
-  # checkm2 1.0.2 requires python >=3.6,<3.9; constrain accordingly.
-  - python >=3.6,<3.9
-  # tensorflow (required by checkm2 1.0.x) pulls in grpcio which requires
-  # c-ares >=1.17.1,<2.0a0; conda-forge now ships c-ares 2.x by default,
-  # so we pin it to a compatible 1.x version.
-  - c-ares <2
+  # checkm2 >=1.0.3 no longer requires tensorflow, avoiding the
+  # grpcio/c-ares dependency conflict present in 1.0.2.
+  - checkm2 >=1.0.3
