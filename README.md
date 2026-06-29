@@ -1,7 +1,10 @@
-# meep
+# meepmeep
 
 A Snakemake pipeline for human data depletion and bacterial whole-genome
 sequencing (WGS) based on Oxford Nanopore Technology (ONT) long reads.
+This pipeline is compatible for bacterial enrichment methods, where human
+DNA is also sequenced but needs to be depleted prior to bacterial genome 
+assembly. 
 
 ## Pipeline overview
 
@@ -42,6 +45,11 @@ conflicts. Snakemake creates and caches these automatically on first run.
 | `envs/env_multiqc.yaml` | MultiQC | ≥ 3.9 |
 
 ## Setup
+
+Retrieve the repo:
+```bash
+git clone https://github.com/tts577/meepmeep.git 
+```
 
 ### 1. Sample sheet
 
