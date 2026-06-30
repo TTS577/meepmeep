@@ -1,8 +1,0 @@
-name: meep_nanostat
-channels:
-  - bioconda
-  - conda-forge
-  - nodefaults
-dependencies:
-  - python >=3.9,<3.13
-  - nanostat >=1.6
