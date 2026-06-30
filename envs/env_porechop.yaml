@@ -1,7 +1,7 @@
 name: meep_porechop
 channels:
-  - bioconda
   - conda-forge
+  - bioconda
   - nodefaults
 dependencies:
   # Porechop 0.2.4 is unmaintained and incompatible with python >=3.10

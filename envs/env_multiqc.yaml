@@ -1,7 +1,7 @@
 name: meep_multiqc
 channels:
-  - bioconda
   - conda-forge
+  - bioconda
   - nodefaults
 dependencies:
   # Pin python <3.13 to avoid 3.14rc (_python_rc missing on bioconda/conda-forge)
