@@ -24,11 +24,6 @@ medaka:
   chunk_len: 800                         # consensus chunk length
   chunk_ovlp: 400                        # overlap between chunks
 
-# ── Kraken2 ───────────────────────────────────────────────────────────────────
-kraken2:
-  db: "resources/kraken2_db"
-  db_type: "standard"
-
 # ── CheckM2 ───────────────────────────────────────────────────────────────────
 checkm2:
   db: "resources/checkm2_db/uniref100.KO.1.dmnd"
