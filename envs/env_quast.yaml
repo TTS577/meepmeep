@@ -1,8 +1,0 @@
-name: meep_quast
-channels:
-  - bioconda
-  - conda-forge
-  - nodefaults
-dependencies:
-  - python >=3.9,<3.13
-  - quast >=5.0
