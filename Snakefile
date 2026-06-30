@@ -6,6 +6,8 @@ configfile: "config/config.yaml"
 
 OUTDIR    = config.get("outdir", "results")
 HUMAN_REF = config.get("human_ref", "resources/GRCh38.mmi")
+
+  
 # ── Container images (GHCR) ───────────────────────────────────────────────────
 CONTAINER_LONGREAD  = "docker://ghcr.io/tts577/meepmeep/longread-env:latest"
 CONTAINER_ASSEMBLY  = "docker://ghcr.io/tts577/meepmeep/assembly-tools:latest"
@@ -49,7 +51,7 @@ rule all:
 # ══════════════════════════════════════════════════════════════════════════════
 rule nanostat_raw:
     input:
-        reads = get_raw_reads,
+        reads = "{outdir}/{sample}/02_human_depletion/{sample}_nonhuman.fastq.gz",
     output:
         stats = "{outdir}/{sample}/01_nanostat_raw/{sample}_NanoStats.txt",
     params:
@@ -66,7 +68,6 @@ rule nanostat_raw:
             --outdir {params.outdir} \
             --name {params.name} \
             --threads {threads} \
-            --N50 \
             2> {log}
         """
 
@@ -79,6 +80,7 @@ rule human_depletion_minimap2:
         human_ref = HUMAN_REF,
     output:
         depleted = "{outdir}/{sample}/02_human_depletion/{sample}_nonhuman.fastq.gz",
+        human    = "{outdir}/{sample}/02_human_depletion/{sample}_human_reads.fastq.gz",
         stats    = "{outdir}/{sample}/02_human_depletion/{sample}_flagstat.txt",
     threads: 16
     conda: "envs/env_minimap2_samtools.yaml"
@@ -95,6 +97,7 @@ rule human_depletion_minimap2:
         2> {log} \
         | samtools view -b -@ {threads} - \
         | tee >(samtools flagstat -@ {threads} - > {output.stats}) \
+              >(samtools view -b -F 4 -@ {threads} - | samtools fastq -@ {threads} - | gzip > {output.human}) \
         | samtools view -b -f 4 -@ {threads} - \
         | samtools fastq -@ {threads} - \
         | gzip > {output.depleted}
@@ -119,6 +122,7 @@ rule porechop:
             -i {input.reads} \
             -o {output.reads} \
             --threads {threads} \
+            --no_split \
             2> {log}
         """
 
@@ -144,7 +148,6 @@ rule nanostat_clean:
             --outdir {params.outdir} \
             --name {params.name} \
             --threads {threads} \
-            --N50 \
             2> {log}
         """
 
@@ -153,7 +156,7 @@ rule nanostat_clean:
 # ══════════════════════════════════════════════════════════════════════════════
 rule filtlong:
     input:
-        reads = "{outdir}/{sample}/03_porechop/{sample}_trimmed.fastq.gz",
+        reads = "{outdir}/{sample}/02_human_depletion/{sample}_nonhuman.fastq.gz",
     output:
         reads = "{outdir}/{sample}/05_filtlong/{sample}_filtered.fastq.gz",
     params:
@@ -271,16 +274,15 @@ rule medaka:
             2>> {log}
 
         # Stitch consensus sequence
-        medaka stitch \
+        medaka sequence \
             --threads {threads} \
             $HDF \
             {input.assembly} \
             {params.outdir}/consensus.fasta \
             2>> {log}
         """
-
 # ══════════════════════════════════════════════════════════════════════════════
-# STEP 9 — Genome completeness & contamination with CheckM2
+# STEP 09 — Genome completeness & contamination with CheckM2
 # ══════════════════════════════════════════════════════════════════════════════
 rule checkm2:
     input:
@@ -291,7 +293,7 @@ rule checkm2:
         outdir = "{outdir}/{sample}/09_checkm2",
         db     = config["checkm2"]["db"],
     threads: 8
-    conda: "envs/meepmeep-checkm2.yaml"
+    conda: "test_checkm2_src"
     container: CONTAINER_CHECKM2
     log: "{outdir}/{sample}/logs/checkm2.log"
     shell:

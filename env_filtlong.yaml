@@ -1,0 +1,8 @@
+name: meep_filtlong
+channels:
+  - bioconda
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python >=3.9,<3.13
+  - filtlong >=0.2.1

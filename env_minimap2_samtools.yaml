@@ -1,0 +1,10 @@
+name: meep_minimap2_samtools
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - python =3.10
+  - minimap2 =2.28
+  - samtools =1.20
+
