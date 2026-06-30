@@ -1,5 +1,22 @@
 # meepmeep
 
+```text
+       _,---._
+    .-'       `-.
+   /   .-""-.     \
+  /   /  _   \     \
+ /   |  ( )   |     |
+|    |   ^    |     |
+|     \  ___ /     /
+ \      `---'     /
+  `-.           .-'
+     `--._____.-' 
+        / /   \\
+       /_/     \\
+
+American woodcock
+```
+
 A Snakemake pipeline for human data depletion and bacterial whole-genome
 sequencing (WGS) based on Oxford Nanopore Technology (ONT) long reads.
 This pipeline is compatible for bacterial enrichment methods, where human
@@ -49,168 +66,4 @@ conflicts. Snakemake creates and caches these automatically on first run.
 Retrieve the repo, make sure it is all lowercase:
 ```bash
 git clone https://github.com/tts577/meepmeep.git 
-```
-
-### 1. Sample sheet
-
-Edit `config/samples.tsv` to list your samples and their FASTQ paths:
-
-```
-Pipeline for human data depletion and bacterial whole-genome sequencing (WGS) based on Oxford Nanopore Technology (ONT) long-read sequencing.
-
-## Pipeline overview
-
-| Step | Rule | Tool | Container |
-|------|------|------|-----------|
-| 1 | `nanostat_raw` | NanoStat | `longread-env` |
-| 2 | `human_depletion_minimap2` | minimap2 + samtools | `longread-env` |
-| 3 | `porechop` | Porechop | `longread-env` |
-| 4 | `nanostat_clean` | NanoStat | `longread-env` |
-| 5 | `filtlong` | Filtlong | `longread-env` |
-| 6 | `flye` | Flye | `longread-env` |
-| 7 | `quast` | QUAST | `assembly-tools` |
-| 8 | `medaka` | Medaka | `medaka` |
-| 9 | `checkm2` | CheckM2 | `checkm2` |
-| 10 | `multiqc` | MultiQC | `assembly-tools` |
-
-## Container images
-
-All pipeline steps run inside Docker/Apptainer (Singularity) containers hosted on the GitHub Container Registry:
-
-| Image | Tools |
-|-------|-------|
-| `ghcr.io/tts577/meepmeep/longread-env:latest` | minimap2, samtools, porechop, filtlong, flye, nanostat |
-| `ghcr.io/tts577/meepmeep/assembly-tools:latest` | QUAST, MultiQC |
-| `ghcr.io/tts577/meepmeep/medaka:latest` | Medaka 1.11.3 |
-| `ghcr.io/tts577/meepmeep/checkm2:latest` | CheckM2 |
-
-Images are built automatically via GitHub Actions (`.github/workflows/build-containers.yml`) whenever the `envs/` or `containers/` directories change.
-
-## Requirements
-
-- [Snakemake](https://snakemake.readthedocs.io) ≥ 8
-- [Apptainer / Singularity](https://apptainer.org) (for container execution)
-
-## Setup
-
-### 1. Edit the sample sheet
-
-Fill in `config/samples.tsv` with your sample names and paths to raw FASTQ files:
-
-```tsv
-sample	long_reads
-sample1	/path/to/sample1_reads.fastq.gz
-sample2	/path/to/sample2_reads.fastq.gz
-```
-
-### 2. Config file
-
-Edit `config/config.yaml` to set:
-
-| Parameter | Description |
-|-----------|-------------|
-| `outdir` | Output directory (default: `meep_pipeline/results`) |
-| `human_ref` | Path to pre-built human reference minimap2 index (`.mmi`) |
-| `samples` | Path to sample sheet TSV |
-| `filtlong.min_length` | Minimum read length in bp |
-| `filtlong.min_mean_q` | Minimum mean Phred quality score |
-| `filtlong.keep_percent` | Percentage of best bases to keep |
-| `flye.read_type` | Flye read type flag (e.g. `--nano-hq`) |
-| `flye.genome_size` | Expected genome size (e.g. `5m`) |
-| `flye.min_overlap` | Minimum overlap for Flye |
-| `flye.extra_args` | Additional Flye flags (e.g. `--meta`) |
-| `medaka.model` | Medaka model (e.g. `r1041_e82_400bps_hac_g632`) |
-| `medaka.chunk_len` | Consensus chunk length (default: `800`) |
-| `medaka.chunk_ovlp` | Overlap between chunks (default: `400`) |
-| `checkm2.db` | Path to CheckM2 diamond database (`.dmnd`) |
-
-### 3. Resources
-
-- **Human reference index**: place or symlink your pre-built GRCh38 minimap2
-  index at `meep_pipeline/resources/GRCh38.mmi` (or update `human_ref` in the
-  config).
-- **CheckM2 database**: place the database at
-  `meep_pipeline/resources/checkm2_db/uniref100.KO.1.dmnd` (or update
-  `checkm2.db` in the config).
-
-> **Note**: The `meep_pipeline/resources/` directory is listed in `.gitignore`
-> to prevent large database and reference files from being committed. You must
-> create this directory locally and populate it with the required files before
-> running the pipeline.
-
-## Running the pipeline
-
-### With conda environments (recommended)
-
-Snakemake builds each per-tool environment automatically on first run. Using
-`mamba` as the solver significantly speeds up environment creation:
-
-```bash
-snakemake --use-conda --conda-frontend mamba --cores <N>
-```
-
-Without mamba:
-
-```bash
-snakemake --use-conda --cores <N>
-```
-
-### Dry run
-
-Preview jobs without executing:
-
-```bash
-snakemake --use-conda --cores <N> -n
-```
-
-## Output structure
-
-```
-meep_pipeline/results/
-├── <sample>/
-│   ├── 01_nanostat_raw/
-│   ├── 02_human_depletion/
-│   ├── 03_porechop/
-│   ├── 04_nanostat_clean/
-│   ├── 05_filtlong/
-│   ├── 06_flye/
-│   ├── 07_quast/            ← QUAST report for unpolished assembly
-│   ├── 08_medaka/
-│   ├── 09_checkm2/
-│   ├── 10_quast_polished/   ← QUAST report for polished assembly
-│   └── logs/
-└── multiqc/
-    └── multiqc_report.html  ← Aggregated QC report
-### 2. Edit the configuration
-
-Adjust `config/config.yaml` to set output paths, filtlong thresholds, Flye genome size, Medaka model, and CheckM2 database path.
-
-### 3. Provide reference resources
-
-Place the following files at the paths configured in `config/config.yaml` (defaults shown):
-
-- `meepmeep/resources/GRCh38.mmi` — minimap2 index of the human reference genome
-- `meepmeep/resources/checkm2_db/uniref100.KO.1.dmnd` — CheckM2 diamond database
-
-## Running the pipeline
-
-```bash
-# Dry-run to verify the workflow
-snakemake --use-apptainer --cores <N> -n
-
-# Full run
-snakemake --use-apptainer --cores <N>
-```
-
-> **Note:** On older Snakemake 7.x installations use `--use-singularity` instead of `--use-apptainer`.
-
-## Building containers locally
-
-All Dockerfiles use the repository root as the build context so that the `envs/` YAML files are accessible:
-
-```bash
-docker build -f containers/longread_env/Dockerfile   -t meepmeep-longread-env  .
-docker build -f containers/assembly_tools/Dockerfile -t meepmeep-assembly-tools .
-docker build -f containers/medaka/Dockerfile         -t meepmeep-medaka        .
-docker build -f containers/checkm2/Dockerfile        -t meepmeep-checkm2       .
 ```
