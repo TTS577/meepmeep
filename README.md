@@ -141,9 +141,20 @@ Edit `config/config.yaml` to set:
 
 ### 3. Resources
 
+Make a resource folder:
+```bash
+mkdir resources
+```
+
+In this folder, a human reference should be placed. When using a differnt human
+reference genome, change all files were GRCH38.mmi is refering to the specific 
+genome.
+
 - **Human reference index**: place or symlink your pre-built GRCh38 minimap2
   index at `meep_pipeline/resources/GRCh38.mmi` (or update `human_ref` in the
   config).
+
+On top of that, plate the CheckM2 diomand database in this folder.
 - **CheckM2 database**: place the database at
   `meep_pipeline/resources/checkm2_db/uniref100.KO.1.dmnd` (or update
   `checkm2.db` in the config).
