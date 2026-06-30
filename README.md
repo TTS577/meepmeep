@@ -46,7 +46,7 @@ conflicts. Snakemake creates and caches these automatically on first run.
 
 ## Setup
 
-Retrieve the repo:
+Retrieve the repo, make sure it is all lowercase:
 ```bash
 git clone https://github.com/tts577/meepmeep.git 
 ```
