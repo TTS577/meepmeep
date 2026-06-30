@@ -1,0 +1,30 @@
+name: meepmeep-longread_env
+# NOTE: This bundled environment is no longer used by the pipeline.
+# All rules now use dedicated per-tool environments in this directory.
+# Kept for reference only.
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - minimap2 >=2.26
+  - samtools >=1.18
+  - porechop >=0.2.4
+  - filtlong >=0.2.1
+  - flye >=2.9
+  - nanostat >=1.6
+  # Alignment & read manipulation
+  - minimap2 >=2.26
+  - samtools >=1.18
+  # Adapter trimming (already installed in local longread_env)
+  - porechop >=0.2.4
+  # Read quality filtering (already installed in local longread_env)
+  - filtlong >=0.2.1
+  # De novo assembly (already installed in local longread_env)
+  - flye >=2.9
+  # Read QC statistics — lightweight replacement for NanoPlot
+  - nanostat >=1.6
+  # Python stack
+  - python >=3.9
+  - pandas >=1.5
+  - biopython >=1.80
