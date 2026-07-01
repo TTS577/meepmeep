@@ -154,7 +154,7 @@ genome.
   index at `meep_pipeline/resources/GRCh38.mmi` (or update `human_ref` in the
   config).
 
-On top of that, plate the CheckM2 diomand database in this folder.
+On top of that, place the CheckM2 diomand database in this folder.
 - **CheckM2 database**: place the database at
   `meep_pipeline/resources/checkm2_db/uniref100.KO.1.dmnd` (or update
   `checkm2.db` in the config).
